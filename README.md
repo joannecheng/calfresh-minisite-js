@@ -11,10 +11,10 @@ npm install
 1. Run
 
 ```
-npm run dev
+npm run start
 ```
 
-2. In your browser, navigate to: [http://localhost:2000/](http://localhost:2000/)
+2. In your browser, navigate to: [http://localhost:8080/](http://localhost:8080/)
 ## For bundled output
 
 ```
