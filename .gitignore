@@ -1,0 +1,11 @@
+## System and generated files
+.idea
+.DS_Store
+.sass-cache
+
+## Directories
+log/
+dist/
+node_modules/
+
+yarn-error.log
