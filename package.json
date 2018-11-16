@@ -4,7 +4,7 @@
   "description": "HTML/JS for calfresh minisite",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server index.js",
+    "start": "webpack-dev-server src/js/index.js",
     "watch-sass": "sass --scss --watch src/sass/main.scss:css/main.css",
     "build-sass": "sass --scss src/sass/main.scss:css/main.css",
     "flow": "./node_modules/flow-bin/cli.js"
@@ -36,6 +36,7 @@
     "babel-cli": "^6.26.0",
     "d3": "^5.6.0",
     "d3-svg-annotation": "^2.3.0",
+    "mapbox-gl": "^0.48.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "scrollmagic": "^2.0.6",

@@ -1,4 +1,5 @@
 import ScrollMagic from "scrollmagic";
+import QuoteMap from "./quote_map"
 import utils from "./utils"
 
 function initalizeSideNavHandlers () {
@@ -14,9 +15,7 @@ function initalizeSideNavHandlers () {
   })
 }
 
-function initializeMap () {
-}
-
 window.main = function() {
   initalizeSideNavHandlers()
+  QuoteMap.draw()
 }
