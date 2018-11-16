@@ -38,6 +38,7 @@
     "d3-svg-annotation": "^2.3.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "scrollmagic": "^2.0.6",
     "sticky-js": "^1.2.0"
   }
 }
