@@ -6,23 +6,27 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoiam9hbm5lY2hlbmciLCJhIjoiYV9YSTdaZyJ9.tOevZpAr
 /********************/
 // Map Interactions
 /********************/
-let selectedCounty_gbl = 0
+let selectedCounty_gbl = null
+window.QuoteView_gbl = null
 
-function selectCounty(quoteMap, e) {
+function selectCounty(quoteMap, quotes, e) {
   const feature = e.features[0]
   const countyName = feature.properties.name
   const countyId = feature.id
 
-  console.log(countyName, countyId)
   // highlight county
-  quoteMap.setFeatureState({source: "counties", id: selectedCounty_gbl},
-                           {selected: false})
+  if (selectedCounty_gbl !== null) {
+    quoteMap.setFeatureState({source: "counties", id: selectedCounty_gbl},
+                             {selected: false})
+  }
   selectedCounty_gbl = countyId
   quoteMap.setFeatureState({source: "counties", id: countyId},
                            {selected: true})
 
   // Scroll to "user_selected_county"
+
   // Update displayed quotes
+  QuoteView_gbl.setCounty(countyName)
 }
 
 /********************/
@@ -75,7 +79,7 @@ function drawCounties(quoteMap, quotes, counties) {
   })
 
   // click handler
-  quoteMap.on("click", "county-fills", selectCounty.bind(this, quoteMap))
+  quoteMap.on("click", "county-fills", selectCounty.bind(this, quoteMap, quotes))
 
 }
 
@@ -111,7 +115,7 @@ const QuoteMap = {
     loadQuotes()
       //.then((response) => "TODO preload quotes here")
       .then((quotes) => {
-        QuoteView.render(quotes)
+        QuoteView_gbl = QuoteView.render(quotes)
         quoteMap.on("load", () => {
           fetchCounties()
             .then((counties) => drawCounties(quoteMap, quotes, counties))
