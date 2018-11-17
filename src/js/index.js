@@ -1,5 +1,6 @@
 import ScrollMagic from "scrollmagic";
 import QuoteMap from "./quote_map"
+import COLVsIncome from "./col_vs_income"
 import utils from "./utils"
 
 function initalizeSideNavHandlers () {

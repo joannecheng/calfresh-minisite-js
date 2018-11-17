@@ -77,10 +77,10 @@ class CountyQuoteView extends Component {
     const {county} = this.props
     if (county == null) {
       return (
-        <div class="grid-box county-info-box" id="user_selected_county">
+        <div className="grid-box county-info-box" id="user_selected_county">
 
-          <div class="grid-item light-background width-seven-twelfths shift-one-third end-row">
-        <h3>Click on the map to view quotes and stats for a county.</h3>
+          <div className="grid-item light-background width-seven-twelfths shift-one-third end-row">
+            <h3>Click on the map to view quotes and stats for a county.</h3>
           </div>
         </div>)
     }
