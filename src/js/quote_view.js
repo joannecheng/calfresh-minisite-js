@@ -9,7 +9,7 @@ const CountyInfoRow = ({countyInfo, title, dataKey, formatter}) => {
       {title}
     </td>
 
-    <td style={{width: "40px"}}>
+    <td style={{width: "65px"}}>
       {formatter(countyInfo[dataKey])}
     </td>
   </tr>)

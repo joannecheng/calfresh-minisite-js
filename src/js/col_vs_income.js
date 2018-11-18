@@ -7,7 +7,8 @@ let familyType_gbl = 2
 let incomeType_gbl = 2
 let showAllCounties_gbl = "hide" // show | hide
 const INCOME_DATA_INDEX = {1: "lower-quartile", 2: "median"}
-const FAMILY_TYPE_INDEX = {one_adult_one_child: 2,
+const FAMILY_TYPE_INDEX = {one_adult_no_children: 1,
+                           one_adult_one_child: 2,
                            one_adult_two_children: 3,
                            one_adult_three_children: 4,
                            two_adults_one_child: 5,
