@@ -1,4 +1,4 @@
-import ScrollMagic from "scrollmagic";
+import ScrollMagic from "scrollmagic"
 import QuoteMap from "./quote_map"
 import COLVsIncome from "./col_vs_income"
 import utils from "./utils"
@@ -22,7 +22,6 @@ function updateWidthListener() {
     COLVsIncome.draw()
   })
 }
-
 window.main = function() {
   initalizeSideNavHandlers()
   QuoteMap.draw()
