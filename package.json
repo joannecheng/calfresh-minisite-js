@@ -7,7 +7,7 @@
     "start": "webpack-dev-server src/js/index.js",
     "watch-sass": "sass --scss --watch src/sass/main.scss:css/main.css",
     "build-sass": "sass --scss src/sass/main.scss:css/main.css",
-    "flow": "./node_modules/flow-bin/cli.js"
+    "build-js": "webpack js/bundle.js"
   },
   "keywords": [],
   "author": "",
