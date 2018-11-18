@@ -41,11 +41,15 @@ function getIncomeCOLData(counties) {
 }
 
 function countiesToShow(incomeCOLData) {
+  const sortedData = incomeCOLData.sort((rowA, rowB) => {
+    return rowA.diff - rowB.diff
+  })
+
   if (showAllCounties_gbl == "show") {
-    return incomeCOLData
+    return sortedData
   }
 
-  return incomeCOLData.filter((row) => { return row.diff < 1000})
+  return sortedData.filter((row) => { return row.diff < 1000})
 }
 
 /*********************************************
