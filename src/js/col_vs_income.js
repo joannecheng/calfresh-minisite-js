@@ -3,9 +3,10 @@ import utils from "./utils"
 import incomeData from "./income_data"
 import colData from "./col_data"
 
-let familyType_glb = 2
-let incomeType_glb = 2
-const INCOME_DATA_INDEX = {lower_quartile: 1, median: 2}
+let familyType_gbl = 2
+let incomeType_gbl = 2
+let showAllCounties_gbl = "hide" // show | hide
+const INCOME_DATA_INDEX = {1: "lower-quartile", 2: "median"}
 const FAMILY_TYPE_INDEX = {one_adult_one_child: 2,
                            one_adult_two_children: 3,
                            one_adult_three_children: 4,
@@ -32,15 +33,19 @@ function getIncomeCOLData(counties) {
 
     return {
       county: county,
-      income: incomeRow[incomeType_glb],
-      col: colRow[familyType_glb],
-      diff: incomeRow[incomeType_glb] - colRow[familyType_glb]
+      income: incomeRow[incomeType_gbl],
+      col: colRow[familyType_gbl],
+      diff: incomeRow[incomeType_gbl] - colRow[familyType_gbl]
     }
   })
 }
 
-function countiesToShow() {
-  //TODO
+function countiesToShow(incomeCOLData) {
+  if (showAllCounties_gbl == "show") {
+    return incomeCOLData
+  }
+
+  return incomeCOLData.filter((row) => { return row.diff < 1000})
 }
 
 /*********************************************
@@ -64,7 +69,7 @@ function drawGrid(svg, width, incomeCOLData) {
       return "odd"
     })
     .classed("row", true)
-    .attr("transform", utils.translateStr(0, (LINE_PADDING / 2)))
+    .attr("transform", utils.translateStr(0, -(LINE_PADDING / 2)))
     .attr("x", 0)
     .attr("y", (_, i) => i * LINE_PADDING)
     .attr("width", width)
@@ -162,26 +167,76 @@ function drawLabels(svg, incomeCOLData) {
 }
 
 /*********************************************
+// Event Handlers
+*********************************************/
+
+function setClickHandlerFor(elementId, handler) {
+  d3.select(`#${elementId}`)
+    .on("click", handler)
+}
+
+function clearControls(el) {
+  el.selectAll("a").classed("active", false)
+}
+
+function setActiveControls() {
+  const showCounties = d3.select("#show_counties_controls")
+  const incomeControls = d3.select("#income_controls")
+  clearControls(showCounties)
+  clearControls(incomeControls)
+  const incomeOption = INCOME_DATA_INDEX[incomeType_gbl]
+
+  showCounties
+    .select(`[data-name="${showAllCounties_gbl}"]`)
+    .classed("active", true)
+
+ incomeControls
+    .select(`[data-name="${incomeOption}"]`)
+    .classed("active", true)
+}
+
+/*********************************************
 // Public functions
 *********************************************/
 const COLVsIncome = {
-  setClickHandlersFor: function(attribute) {
+  setClickHandlers: function() {
+    setClickHandlerFor("show_counties_controls", function() {
+      if (showAllCounties_gbl === "show") {
+        showAllCounties_gbl = "hide"
+      } else {
+        showAllCounties_gbl = "show"
+      }
+      COLVsIncome.clear()
+      COLVsIncome.draw()
+    })
+
+    setClickHandlerFor("income_controls", function() {
+      if (incomeType_gbl === 1) {
+        incomeType_gbl = 2
+      } else {
+        incomeType_gbl = 1
+      }
+
+      COLVsIncome.clear()
+      COLVsIncome.draw()
+    })
   },
 
-  update: function(width) {
+  clear: function() {
+    d3.selectAll("#col_vs_income svg").remove()
   },
 
   draw: function(incomeData) {
+    setActiveControls()
     const counties = colData.map((row) => row[0])
-    const incomeCOLData = getIncomeCOLData(counties)
+    const incomeCOLData = countiesToShow(getIncomeCOLData(counties))
 
     const elementId = "col_vs_income"
     const width = utils.widthOf(elementId)
-    const height = MARGINS.top + (LINE_PADDING * counties.length)
+    const height = MARGINS.top + (LINE_PADDING * incomeCOLData.length)
     const scale = lineScale(width)
 
     const svg = createSVG(elementId, width, height)
-    //TODO FILTER COUNTIES
     const gridSvg = svg.append("g")
           .classed("grid", true)
           .attr("transform", utils.translateStr(0, MARGINS.top))
@@ -196,7 +251,6 @@ const COLVsIncome = {
     drawMarker(linesSvg, incomeCOLData, scale, "income-marker")
     drawMarker(linesSvg, incomeCOLData, scale, "col-marker")
     drawLabels(linesSvg, incomeCOLData)
-    console.log(incomeCOLData)
   }
 }
 

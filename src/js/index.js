@@ -16,8 +16,18 @@ function initalizeSideNavHandlers () {
   })
 }
 
+function updateWidthListener() {
+  window.addEventListener("resize", () => {
+    COLVsIncome.clear()
+    COLVsIncome.draw()
+  })
+}
+
 window.main = function() {
   initalizeSideNavHandlers()
   QuoteMap.draw()
   COLVsIncome.draw()
+  COLVsIncome.setClickHandlers()
+
+  updateWidthListener()
 }
