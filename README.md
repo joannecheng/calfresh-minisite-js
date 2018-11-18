@@ -26,10 +26,19 @@ yarn watch-sass
 ```
 
 2. In your browser, navigate to: [http://localhost:8080/](http://localhost:8080/)
-## For bundled output
 
-TODO
+# Production
+
+## To deploy
+
+To deploy on GitHub pages, I wrote a very simple deploy script at `deploy.sh`.
+When all of your changes on `master` have been committed or stashed, you can run
+the script to see all your changes on GitHub pages.
+
 
 ## For production-ready output
 
-TODO
+```
+yarn build-sass # output to css folder
+yarn build-js # output to bundle.js
+```
