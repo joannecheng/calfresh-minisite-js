@@ -19,4 +19,5 @@ function initalizeSideNavHandlers () {
 window.main = function() {
   initalizeSideNavHandlers()
   QuoteMap.draw()
+  COLVsIncome.draw()
 }

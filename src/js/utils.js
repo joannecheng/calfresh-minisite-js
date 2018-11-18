@@ -9,6 +9,18 @@ const utils = {
     return el.clientHeight
   },
 
+  widthOf: function(elementId) {
+    const el = document.getElementById(elementId)
+    if (el == null) {
+      return 0
+    }
+    return el.clientWidth
+  },
+
+  translateStr: function(x, y) {
+    return `translate(${x}, ${y})`
+  },
+
   formatPercent: function(num) {
     return format(".2%")(num)
   },
