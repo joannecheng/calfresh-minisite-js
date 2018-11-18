@@ -1,10 +1,9 @@
 git checkout gh-pages
 git merge master
-yarn install
-npm run build
-rm -R assets/
-mv dist/* .
-git add *.html assets/
-git commit -m "New deploy"
+
+yarn build-js
+yarn build-sass
+git add -A
+
 git push origin gh-pages
 git checkout master
