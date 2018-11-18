@@ -3,13 +3,14 @@ import utils from "./utils"
 import incomeData from "./income_data"
 import colData from "./col_data"
 
-let familyType_gbl = 2
 let incomeType_gbl = 2
 let showAllCounties_gbl = "hide" // show | hide
+let numberChildren_gbl = "one_child"
+let numberAdults_gbl = "one_adult"
 const INCOME_DATA_INDEX = {1: "lower-quartile", 2: "median"}
 const FAMILY_TYPE_INDEX = {one_adult_no_children: 1,
-                           one_adult_one_child: 2,
-                           one_adult_two_children: 3,
+                           one_adult_one_child: 2 ,
+                           one_adult_two_children: 3 ,
                            one_adult_three_children: 4,
                            two_adults_one_child: 5,
                            two_adults_two_children: 6,
@@ -20,6 +21,11 @@ const LINE_PADDING = 16
 /*********************************************
 // Data Manipulation
 *********************************************/
+function getFamilyTypeIndex() {
+  const familyTypeString =`${numberAdults_gbl}_${numberChildren_gbl}`
+  return FAMILY_TYPE_INDEX[familyTypeString];
+}
+
 function lineScale(width) {
   return d3.scaleLinear()
     .domain([0, 150000]) // this value should be generated
@@ -31,12 +37,13 @@ function getIncomeCOLData(counties) {
   return counties.map((county) => {
     const incomeRow = incomeData.find((row) => row[0] === county)
     const colRow = colData.find((row) => row[0] === county)
+    const familyType = getFamilyTypeIndex()
 
     return {
       county: county,
       income: incomeRow[incomeType_gbl],
-      col: colRow[familyType_gbl],
-      diff: incomeRow[incomeType_gbl] - colRow[familyType_gbl]
+      col: colRow[familyType],
+      diff: incomeRow[incomeType_gbl] - colRow[familyType]
     }
   })
 }
@@ -50,7 +57,13 @@ function countiesToShow(incomeCOLData) {
     return sortedData
   }
 
-  return sortedData.filter((row) => { return row.diff < 1000})
+  const COLgreaterThanIncome = sortedData.filter((row) => { return row.diff < 1000})
+
+  // This is really hacky, but it prevents the chart from showing no data
+  if (COLgreaterThanIncome.length < 3) {
+    return sortedData
+  }
+  return COLgreaterThanIncome
 }
 
 /*********************************************
@@ -176,7 +189,7 @@ function drawLabels(svg, incomeCOLData) {
 *********************************************/
 
 function setClickHandlerFor(elementId, handler) {
-  d3.select(`#${elementId}`)
+  d3.selectAll(`#${elementId} a`)
     .on("click", handler)
 }
 
@@ -184,20 +197,27 @@ function clearControls(el) {
   el.selectAll("a").classed("active", false)
 }
 
+function setActiveControlFor(d3Selection, property) {
+  d3Selection.select(`[data-name="${property}"]`)
+    .classed("active", true)
+}
+
 function setActiveControls() {
   const showCounties = d3.select("#show_counties_controls")
   const incomeControls = d3.select("#income_controls")
+  const numAdults = d3.select("#num_adults_controls")
+  const numChildren = d3.select("#num_children_controls")
+
   clearControls(showCounties)
   clearControls(incomeControls)
+  clearControls(numAdults)
+  clearControls(numChildren)
   const incomeOption = INCOME_DATA_INDEX[incomeType_gbl]
 
-  showCounties
-    .select(`[data-name="${showAllCounties_gbl}"]`)
-    .classed("active", true)
-
- incomeControls
-    .select(`[data-name="${incomeOption}"]`)
-    .classed("active", true)
+  setActiveControlFor(showCounties, showAllCounties_gbl)
+  setActiveControlFor(incomeControls, incomeOption)
+  setActiveControlFor(numAdults, numberAdults_gbl)
+  setActiveControlFor(numChildren, numberChildren_gbl)
 }
 
 /*********************************************
@@ -221,7 +241,17 @@ const COLVsIncome = {
       } else {
         incomeType_gbl = 1
       }
+      COLVsIncome.clear()
+      COLVsIncome.draw()
+    })
 
+    setClickHandlerFor("num_adults_controls", function() {
+      numberAdults_gbl = this.getAttribute("data-name")
+      COLVsIncome.clear()
+      COLVsIncome.draw()
+    })
+    setClickHandlerFor("num_children_controls", function() {
+      numberChildren_gbl = this.getAttribute("data-name")
       COLVsIncome.clear()
       COLVsIncome.draw()
     })
