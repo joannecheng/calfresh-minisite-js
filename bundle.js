@@ -50677,10 +50677,11 @@ function nopropagation() {
 
 
 
-let familyType_gbl = 2;
 let incomeType_gbl = 2;
 let showAllCounties_gbl = "hide"; // show | hide
 
+let numberChildren_gbl = "one_child";
+let numberAdults_gbl = "one_adult";
 const INCOME_DATA_INDEX = {
   1: "lower-quartile",
   2: "median"
@@ -50704,6 +50705,11 @@ const LINE_PADDING = 16;
 // Data Manipulation
 *********************************************/
 
+function getFamilyTypeIndex() {
+  const familyTypeString = `${numberAdults_gbl}_${numberChildren_gbl}`;
+  return FAMILY_TYPE_INDEX[familyTypeString];
+}
+
 function lineScale(width) {
   return __WEBPACK_IMPORTED_MODULE_0_d3__["b" /* scaleLinear */]().domain([0, 150000]) // this value should be generated
   .range([0, width]);
@@ -50714,11 +50720,12 @@ function getIncomeCOLData(counties) {
   return counties.map(county => {
     const incomeRow = __WEBPACK_IMPORTED_MODULE_2__income_data__["a" /* default */].find(row => row[0] === county);
     const colRow = __WEBPACK_IMPORTED_MODULE_3__col_data__["a" /* default */].find(row => row[0] === county);
+    const familyType = getFamilyTypeIndex();
     return {
       county: county,
       income: incomeRow[incomeType_gbl],
-      col: colRow[familyType_gbl],
-      diff: incomeRow[incomeType_gbl] - colRow[familyType_gbl]
+      col: colRow[familyType],
+      diff: incomeRow[incomeType_gbl] - colRow[familyType]
     };
   });
 }
@@ -50732,9 +50739,15 @@ function countiesToShow(incomeCOLData) {
     return sortedData;
   }
 
-  return sortedData.filter(row => {
+  const COLgreaterThanIncome = sortedData.filter(row => {
     return row.diff < 1000;
-  });
+  }); // This is really hacky, but it prevents the chart from showing no data
+
+  if (COLgreaterThanIncome.length < 3) {
+    return sortedData;
+  }
+
+  return COLgreaterThanIncome;
 }
 /*********************************************
 // SVG Drawing functions
@@ -50791,21 +50804,31 @@ function drawLabels(svg, incomeCOLData) {
 
 
 function setClickHandlerFor(elementId, handler) {
-  __WEBPACK_IMPORTED_MODULE_0_d3__["c" /* select */](`#${elementId}`).on("click", handler);
+  __WEBPACK_IMPORTED_MODULE_0_d3__["d" /* selectAll */](`#${elementId} a`).on("click", handler);
 }
 
 function clearControls(el) {
   el.selectAll("a").classed("active", false);
 }
 
+function setActiveControlFor(d3Selection, property) {
+  d3Selection.select(`[data-name="${property}"]`).classed("active", true);
+}
+
 function setActiveControls() {
   const showCounties = __WEBPACK_IMPORTED_MODULE_0_d3__["c" /* select */]("#show_counties_controls");
   const incomeControls = __WEBPACK_IMPORTED_MODULE_0_d3__["c" /* select */]("#income_controls");
+  const numAdults = __WEBPACK_IMPORTED_MODULE_0_d3__["c" /* select */]("#num_adults_controls");
+  const numChildren = __WEBPACK_IMPORTED_MODULE_0_d3__["c" /* select */]("#num_children_controls");
   clearControls(showCounties);
   clearControls(incomeControls);
+  clearControls(numAdults);
+  clearControls(numChildren);
   const incomeOption = INCOME_DATA_INDEX[incomeType_gbl];
-  showCounties.select(`[data-name="${showAllCounties_gbl}"]`).classed("active", true);
-  incomeControls.select(`[data-name="${incomeOption}"]`).classed("active", true);
+  setActiveControlFor(showCounties, showAllCounties_gbl);
+  setActiveControlFor(incomeControls, incomeOption);
+  setActiveControlFor(numAdults, numberAdults_gbl);
+  setActiveControlFor(numChildren, numberChildren_gbl);
 }
 /*********************************************
 // Public functions
@@ -50831,6 +50854,16 @@ const COLVsIncome = {
         incomeType_gbl = 1;
       }
 
+      COLVsIncome.clear();
+      COLVsIncome.draw();
+    });
+    setClickHandlerFor("num_adults_controls", function () {
+      numberAdults_gbl = this.getAttribute("data-name");
+      COLVsIncome.clear();
+      COLVsIncome.draw();
+    });
+    setClickHandlerFor("num_children_controls", function () {
+      numberChildren_gbl = this.getAttribute("data-name");
       COLVsIncome.clear();
       COLVsIncome.draw();
     });
